@@ -29,7 +29,7 @@ RUN apt-get update \
  && make install \
  && cd /root \
  && rm -fr openblas \
- && su app -c "/app/build_torch.sh"
+ && su app -c "/app/build_torch.sh" \
  && ln -s /app/torch/install/bin/* /usr/local/bin \
  && luarocks install dpnn \
  && luarocks install image \
@@ -52,7 +52,7 @@ RUN apt-get update \
  && cd /root/dlib/python_examples && cmake ../tools/python && cmake --build . --config Release -- -j8 \
  && cp dlib.so /usr/local/lib/python2.7/dist-packages \
  && cd /root && rm dlib -rf \
- && su app -c "/app/build_openface.sh"
+ && su app -c "/app/build_openface.sh" \
  && SUDO_FORCE_REMOVE=yes apt-get remove -y sudo wget git cmake build-essential python2.7-dev libtbb-dev \
     libpng12-dev libtiff5-dev libfftw3-dev libreadline6-dev libjpeg8-dev libzmq3-dev libboost-python1.58-dev libssl-dev \
  && apt-get autoremove -y \
