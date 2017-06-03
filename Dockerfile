@@ -1,7 +1,7 @@
 FROM ubuntu:16.04
 
-ADD build_openface.sh /app
-ADD build_torch.sh /app
+ADD build_openface.sh /app/
+ADD build_torch.sh /app/
 
 RUN apt-get update \
  && apt-get install -y sudo wget curl git zip python2.7-dev python2.7 libpython2.7 python-pip cmake build-essential ca-certificates \
@@ -17,7 +17,6 @@ RUN apt-get update \
             libboost-signals1.58.0 libboost-test1.58.0 libboost-thread1.58.0 libboost-timer1.58.0 libboost-wave1.58.0 \
             libboost-python1.58.0 libboost-python1.58-dev libssl1.0.0 libssl-dev \
  && pip install numpy scipy pandas scikit-learn scikit-image \
- && mkdir /app \
  && useradd -m app && echo "app:app" | chpasswd && adduser app sudo \
  && chown -R app /app \
  && adduser app adm \
@@ -53,6 +52,7 @@ RUN apt-get update \
  && cp dlib.so /usr/local/lib/python2.7/dist-packages \
  && cd /root && rm dlib -rf \
  && su app -c "/app/build_openface.sh" \
+ && python setup.py install
  && SUDO_FORCE_REMOVE=yes apt-get remove -y sudo wget git cmake build-essential python2.7-dev libtbb-dev \
     libpng12-dev libtiff5-dev libfftw3-dev libreadline6-dev libjpeg8-dev libzmq3-dev libboost-python1.58-dev libssl-dev \
  && apt-get autoremove -y \
