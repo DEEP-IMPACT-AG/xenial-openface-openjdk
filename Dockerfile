@@ -30,13 +30,7 @@ RUN apt-get update \
  && rm -fr openblas \
  && su app -c "/app/build_torch.sh" \
  && ln -s /app/torch/install/bin/* /usr/local/bin \
- && luarocks install dpnn \
- && luarocks install image \
- && luarocks install optim  \
- && luarocks install csvigo \
- && luarocks install optnet \
- && luarocks install graphicsmagick \
- && luarocks install tds \
+ && su app -c "luarocks install dpnn && luarocks install image && luarocks install optim && luarocks install csvigo && luarocks install optnet && luarocks install graphicsmagick && luarocks install tds" \
  && git clone https://github.com/opencv/opencv.git /root/opencv && cd /root/opencv && git checkout 2.4.13 \
  && mkdir /root/opencv/build && cd /root/opencv/build  \
  && cmake -D CMAKE_BUILD_TYPE=RELEASE \
