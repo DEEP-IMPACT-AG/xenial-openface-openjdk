@@ -1,5 +1,8 @@
 FROM ubuntu:16.04
 
+ADD build_openface.sh /app
+ADD build_torch.sh /app
+
 RUN apt-get update \
  && apt-get install -y sudo wget curl git zip python2.7-dev python2.7 libpython2.7 python-pip cmake build-essential ca-certificates \
             libtbb2 libtbb-dev libpng12-0 libpng12-dev libtiff5-dev libjasper1 libjasper-dev \
@@ -14,16 +17,20 @@ RUN apt-get update \
             libboost-signals1.58.0 libboost-test1.58.0 libboost-thread1.58.0 libboost-timer1.58.0 libboost-wave1.58.0 \
             libboost-python1.58.0 libboost-python1.58-dev libssl1.0.0 libssl-dev \
  && pip install numpy scipy pandas scikit-learn scikit-image \
+ && mkdir /app \
+ && useradd -m app && echo "app:app" | chpasswd && adduser app sudo \
+ && chown -R app /app \
+ && adduser app adm \
+ && chmod a+rx /root \
+ && chmod a+rxw /var \
  && git clone https://github.com/xianyi/OpenBLAS.git /root/openblas \
  && cd /root/openblas/ \
  && make NO_AFFINITY=1 USE_OPENMP=0 USE_THREAD=0 \
  && make install \
  && cd /root \
  && rm -fr openblas \
- && git clone https://github.com/torch/distro.git /root/torch --recursive \
- && cd /root/torch \
- && echo yes | ./install.sh \
- && ln -s /root/torch/install/bin/* /usr/local/bin \
+ && su app -c "/app/build_torch.sh"
+ && ln -s /app/torch/install/bin/* /usr/local/bin \
  && luarocks install dpnn \
  && luarocks install image \
  && luarocks install optim  \
@@ -45,27 +52,9 @@ RUN apt-get update \
  && cd /root/dlib/python_examples && cmake ../tools/python && cmake --build . --config Release -- -j8 \
  && cp dlib.so /usr/local/lib/python2.7/dist-packages \
  && cd /root && rm dlib -rf \
- && git clone https://github.com/cmusatyalab/openface.git /root/openface \
- && cd /root/openface && git submodule init && git submodule update \
- && ./models/get-models.sh \
- && pip install -r requirements.txt \
- && python setup.py install \
- && ./data/download-lfw-subset.sh \
+ && su app -c "/app/build_openface.sh"
  && SUDO_FORCE_REMOVE=yes apt-get remove -y sudo wget git cmake build-essential python2.7-dev libtbb-dev \
     libpng12-dev libtiff5-dev libfftw3-dev libreadline6-dev libjpeg8-dev libzmq3-dev libboost-python1.58-dev libssl-dev \
  && apt-get autoremove -y \
- && find /root -name ".git" | xargs rm -fr {} \
+ && find /app -name ".git" | xargs rm -fr {} \
  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
- && mkdir /app \
- && useradd -m app && echo "app:app" | chpasswd && adduser app sudo \
- && chown -R app /app \
- && adduser app adm \
- && chmod a+rx /root \
- && chmod a+rxw /var
-
-USER app
-WORKDIR /app
-
-CMD ["./app.sh"]
-
-
