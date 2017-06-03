@@ -52,6 +52,7 @@ RUN apt-get update \
  && cp dlib.so /usr/local/lib/python2.7/dist-packages \
  && cd /root && rm dlib -rf \
  && su app -c "/app/build_openface.sh" \
+ && cd /app/openface \
  && python setup.py install \
  && SUDO_FORCE_REMOVE=yes apt-get remove -y sudo wget git cmake build-essential python2.7-dev libtbb-dev \
     libpng12-dev libtiff5-dev libfftw3-dev libreadline6-dev libjpeg8-dev libzmq3-dev libboost-python1.58-dev libssl-dev \
