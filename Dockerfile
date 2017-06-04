@@ -14,16 +14,21 @@ RUN apt-get update \
             libboost-signals1.58.0 libboost-test1.58.0 libboost-thread1.58.0 libboost-timer1.58.0 libboost-wave1.58.0 \
             libboost-python1.58.0 libboost-python1.58-dev libssl1.0.0 libssl-dev \
  && pip install numpy scipy pandas scikit-learn scikit-image \
- && git clone https://github.com/xianyi/OpenBLAS.git /root/openblas \
- && cd /root/openblas/ \
+ && mkdir -p /app \
+ && useradd -m app && echo "app:app" | chpasswd && adduser app sudo \
+ && chown -R app /app \
+ && adduser app adm \
+ && chmod a+rxw /var \
+ && git clone https://github.com/xianyi/OpenBLAS.git /app/openblas \
+ && cd /app/openblas/ \
  && make NO_AFFINITY=1 USE_OPENMP=0 USE_THREAD=0 \
  && make install \
- && cd /root \
+ && cd /app \
  && rm -fr openblas \
- && git clone https://github.com/torch/distro.git /root/torch --recursive \
- && cd /root/torch \
+ && git clone https://github.com/torch/distro.git /app/torch --recursive \
+ && cd /app/torch \
  && echo yes | ./install.sh \
- && ln -s /root/torch/install/bin/* /usr/local/bin \
+ && ln -s /app/torch/install/bin/* /usr/local/bin \
  && luarocks install dpnn \
  && luarocks install image \
  && luarocks install optim  \
@@ -31,22 +36,22 @@ RUN apt-get update \
  && luarocks install optnet \
  && luarocks install graphicsmagick \
  && luarocks install tds \
- && git clone https://github.com/opencv/opencv.git /root/opencv && cd /root/opencv && git checkout 2.4.13 \
- && mkdir /root/opencv/build && cd /root/opencv/build  \
+ && git clone https://github.com/opencv/opencv.git /app/opencv && cd /app/opencv && git checkout 2.4.13 \
+ && mkdir /app/opencv/build && cd /app/opencv/build  \
  && cmake -D CMAKE_BUILD_TYPE=RELEASE \
           -D CMAKE_INSTALL_PREFIX=/usr/local \
           -D BUILD_PYTHON_SUPPORT=ON \
           ..  \
  && make -j8 \
  && make install \
- && cd /root \
+ && cd /app \
  && rm -fr opencv \
- && git clone https://github.com/davisking/dlib.git /root/dlib && cd /root/dlib && git checkout v19.0 \
- && cd /root/dlib/python_examples && cmake ../tools/python && cmake --build . --config Release -- -j8 \
+ && git clone https://github.com/davisking/dlib.git /app/dlib && cd /app/dlib && git checkout v19.0 \
+ && cd /app/dlib/python_examples && cmake ../tools/python && cmake --build . --config Release -- -j8 \
  && cp dlib.so /usr/local/lib/python2.7/dist-packages \
- && cd /root && rm dlib -rf \
- && git clone https://github.com/cmusatyalab/openface.git /root/openface \
- && cd /root/openface && git submodule init && git submodule update \
+ && cd /app && rm dlib -rf \
+ && git clone https://github.com/cmusatyalab/openface.git /app/openface \
+ && cd /app/openface && git submodule init && git submodule update \
  && ./models/get-models.sh \
  && pip install -r requirements.txt \
  && python setup.py install \
@@ -54,18 +59,5 @@ RUN apt-get update \
  && SUDO_FORCE_REMOVE=yes apt-get remove -y sudo wget git cmake build-essential python2.7-dev libtbb-dev \
     libpng12-dev libtiff5-dev libfftw3-dev libreadline6-dev libjpeg8-dev libzmq3-dev libboost-python1.58-dev libssl-dev \
  && apt-get autoremove -y \
- && find /root -name ".git" | xargs rm -fr {} \
- && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
- && mkdir /app \
- && useradd -m app && echo "app:app" | chpasswd && adduser app sudo \
- && chown -R app /app \
- && adduser app adm \
- && chmod a+rx /root \
- && chmod a+rxw /var
-
-USER app
-WORKDIR /app
-
-CMD ["./app.sh"]
-
-
+ && find /app -name ".git" | xargs rm -fr {} \
+ && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
