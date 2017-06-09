@@ -61,3 +61,6 @@ RUN apt-get update \
  && apt-get autoremove -y \
  && find /app -name ".git" | xargs rm -fr {} \
  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+ENV OPENFACE_HOME=/app/openface
+
