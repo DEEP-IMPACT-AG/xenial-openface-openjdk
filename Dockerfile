@@ -47,7 +47,7 @@ RUN apt-get update \
  && cd /app \
  && rm -fr opencv \
  && git clone https://github.com/davisking/dlib.git /app/dlib && cd /app/dlib && git checkout v19.0 \
- && cd /app/dlib/python_examples && cmake ../tools/python && cmake --build . --config Release -- -j8 \
+ && cd /app/dlib/python_examples && cmake ../tools/python && cmake --build . --config Release \
  && cp dlib.so /usr/local/lib/python2.7/dist-packages \
  && cd /app && rm dlib -rf \
  && git clone https://github.com/cmusatyalab/openface.git /app/openface \
