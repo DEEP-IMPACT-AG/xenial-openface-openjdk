@@ -42,7 +42,7 @@ RUN apt-get update \
           -D CMAKE_INSTALL_PREFIX=/usr/local \
           -D BUILD_PYTHON_SUPPORT=ON \
           ..  \
- && make -j8 \
+ && make \
  && make install \
  && cd /app \
  && rm -fr opencv \
