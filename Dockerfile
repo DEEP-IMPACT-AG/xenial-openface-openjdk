@@ -6,14 +6,14 @@ RUN apt-get update \
             libdc1394-22 libdc1394-22-dev openjdk-8-jre-headless \
             graphicsmagick libgraphicsmagick1-dev libfftw3-bin libfftw3-double3 libfftw3-long3 libfftw3-quad3 \
             libfftw3-single3 libfftw3-dev \
-            libreadline6 libreadline6-dev libjpeg8 libjpeg8-dev libzmq5 libzmq3-dev \
+            libreadline6 libreadline6-dev libjpeg8 libjpeg8-dev libzmq5 libzmq3-dev libzmq-jni \
             libboost-atomic1.58.0 libboost-chrono1.58.0 libboost-context1.58.0 libboost-coroutine1.58.0 \
             libboost-date-time1.58.0 libboost-filesystem1.58.0 libboost-graph-parallel1.58.0 libboost-graph1.58.0 \
             libboost-iostreams1.58.0 libboost-locale1.58.0 libboost-log1.58.0 libboost-math1.58.0 libboost-mpi-python1.58.0 \
             libboost-mpi1.58.0 libboost-program-options1.58.0 libboost-random1.58.0 libboost-regex1.58.0 libboost-serialization1.58.0 \
             libboost-signals1.58.0 libboost-test1.58.0 libboost-thread1.58.0 libboost-timer1.58.0 libboost-wave1.58.0 \
             libboost-python1.58.0 libboost-python1.58-dev libssl1.0.0 libssl-dev \
- && pip install numpy scipy pandas scikit-learn scikit-image \
+ && pip install numpy scipy pandas scikit-learn scikit-image pyzmq msgpack-python \
  && mkdir -p /app \
  && useradd -m app && echo "app:app" | chpasswd && adduser app sudo \
  && chown -R app /app \
@@ -43,7 +43,6 @@ RUN apt-get update \
           -D BUILD_PYTHON_SUPPORT=ON \
           ..  \
  && make \
- && make install \
  && cd /app \
  && rm -fr opencv \
  && git clone https://github.com/davisking/dlib.git /app/dlib && cd /app/dlib && git checkout v19.0 \
