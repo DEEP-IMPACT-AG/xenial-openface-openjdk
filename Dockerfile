@@ -43,6 +43,7 @@ RUN apt-get update \
           -D BUILD_PYTHON_SUPPORT=ON \
           ..  \
  && make \
+ && make install \
  && cd /app \
  && rm -fr opencv \
  && git clone https://github.com/davisking/dlib.git /app/dlib && cd /app/dlib && git checkout v19.0 \
